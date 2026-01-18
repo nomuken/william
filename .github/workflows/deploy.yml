@@ -1,0 +1,53 @@
+name: Deploy Production
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    env:
+      FRONTEND_IMAGE: ghcr.io/${{ github.repository }}/frontend:latest
+      ADMIN_FRONTEND_IMAGE: ghcr.io/${{ github.repository }}/admin-frontend:latest
+      WIREGUARD_API_BASE_URL: ${{ vars.WIREGUARD_API_BASE_URL }}
+      WIREGUARD_ADMIN_API_BASE_URL: ${{ vars.WIREGUARD_ADMIN_API_BASE_URL }}
+      ANSIBLE_HOST_KEY_CHECKING: "false"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Load secrets from 1Password
+        uses: 1password/load-secrets-action@v2
+        with:
+          export-env: true
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          POMERIUM_CLIENT_ID: op://REPLACE_ME/pomerium/client_id
+          POMERIUM_CLIENT_SECRET: op://REPLACE_ME/pomerium/client_secret
+          POMERIUM_COOKIE_SECRET: op://REPLACE_ME/pomerium/cookie_secret
+          POMERIUM_SHARED_SECRET: op://REPLACE_ME/pomerium/shared_secret
+          POMERIUM_AUTOCERT_EMAIL: op://REPLACE_ME/pomerium/autocert_email
+
+      - name: Install Ansible
+        run: python -m pip install ansible
+
+      - name: Install Ansible Galaxy roles
+        run: ansible-galaxy install -r deploy/ansible/requirements.yml
+
+      - name: Decrypt deploy SSH key
+        env:
+          DEPLOY_USER_PASSWORD: ${{ secrets.DEPLOY_USER_PASSWORD }}
+        run: |
+          printf '%s' "$DEPLOY_USER_PASSWORD" > /tmp/vault_pass
+          cp deploy/keys/id_rsa.vault /tmp/id_rsa
+          ansible-vault decrypt /tmp/id_rsa --vault-password-file /tmp/vault_pass
+          chmod 600 /tmp/id_rsa
+
+      - name: Deploy with Ansible
+        run: |
+          ansible-playbook -i deploy/ansible/inventory/production.ini deploy/ansible/site.yml \
+            --private-key /tmp/id_rsa \
+            --extra-vars "frontend_image=${FRONTEND_IMAGE} admin_frontend_image=${ADMIN_FRONTEND_IMAGE} wireguard_api_base_url=${WIREGUARD_API_BASE_URL} wireguard_admin_api_base_url=${WIREGUARD_ADMIN_API_BASE_URL} pomerium_client_id=${POMERIUM_CLIENT_ID} pomerium_client_secret=${POMERIUM_CLIENT_SECRET} pomerium_cookie_secret=${POMERIUM_COOKIE_SECRET} pomerium_shared_secret=${POMERIUM_SHARED_SECRET} pomerium_autocert_email=${POMERIUM_AUTOCERT_EMAIL}"

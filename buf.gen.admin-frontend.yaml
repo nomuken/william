@@ -1,0 +1,7 @@
+version: v2
+plugins:
+  - remote: buf.build/bufbuild/es:v2.10.2
+    out: services/admin-frontend/src/gen
+    opt:
+      - target=js+dts
+      - import_extension=none

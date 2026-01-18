@@ -1,0 +1,5 @@
+# Generated Go code
+/services/server/gen/
+
+# Local database
+/services/server/data/william.db

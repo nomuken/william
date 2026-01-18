@@ -1,0 +1,13 @@
+[Interface]
+PrivateKey = {{.PrivateKey}}
+Address = {{.Address}}
+
+[Peer]
+PublicKey = {{.ServerPublicKey}}
+{{- if .Endpoint }}
+Endpoint = {{.Endpoint}}
+{{- else }}
+# Endpoint = <server-host>:{{.ListenPort}}
+{{- end }}
+AllowedIPs = {{.AllowedIPs}}
+PersistentKeepalive = 25

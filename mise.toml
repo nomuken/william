@@ -1,0 +1,45 @@
+[tools]
+buf = "1.63.0"
+protoc = "33.4"
+protoc-gen-connect-go = "1.18.0"
+protoc-gen-go = "1.36.11"
+
+[tasks.server-migrate]
+description = "Run server migrations in Docker"
+dir = "."
+run = "docker run --rm -v $PWD:/workspace -w /workspace/services/server migrate/migrate -path db/migrations -database postgres://postgres:postgres@host.internal:5432/william?sslmode=disable up"
+
+[tasks.server-sqlc]
+description = "Generate sqlc code in Docker"
+dir = "."
+run = "docker run --rm -v $PWD:/repo -w /repo/services/server sqlc/sqlc generate"
+
+[tasks.db-shell]
+description = "Open a psql shell against Postgres"
+dir = "."
+run = "docker run --rm -it postgres:16-alpine psql postgres://postgres:postgres@host.internal:5432/william?sslmode=disable"
+
+[tasks.server-buf-generate]
+description = "Generate protobuf code for server"
+dir = "."
+run = "buf generate"
+
+[tasks.server-seed]
+description = "Seed development data into Postgres"
+dir = "."
+run = "docker run --rm -v $PWD:/workspace -w /workspace/services/server postgres:16-alpine sh -c \"psql postgres://postgres:postgres@host.internal:5432/william?sslmode=disable -f db/seed.sql\""
+
+[tasks.frontend-buf-generate]
+description = "Generate protobuf code for frontend"
+dir = "."
+run = "buf generate --template buf.gen.frontend.yaml"
+
+[tasks.dev-up]
+description = "Start dev containers (frontend + server)"
+dir = "."
+run = "docker compose -f compose.dev.yaml up --build -d"
+
+[tasks.dev-down]
+description = "Stop dev containers"
+dir = "."
+run = "docker compose -f compose.dev.yaml down"

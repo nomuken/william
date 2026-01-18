@@ -1,0 +1,69 @@
+syntax = "proto3";
+package william.v1;
+
+import "google/protobuf/empty.proto";
+
+message WireguardInterface {
+  string id = 1;
+  string name = 2;
+  string address = 3;
+  uint32 listen_port = 4;
+  string public_key = 5;
+  uint32 mtu = 6;
+}
+
+message ListWireguardInterfacesResponse {
+  repeated WireguardInterface interfaces = 1;
+}
+
+message CreateWireguardPeerRequest {
+  string wireguard_interface_id = 1;
+}
+
+message CreateWireguardPeerResponse {
+  string peer_id = 1;
+  string peer_config = 2;
+}
+
+message DeleteWireguardPeerRequest {
+  string peer_id = 1;
+}
+
+message DeleteWireguardPeerResponse {
+}
+
+message GetMyWireguardPeerResponse {
+  string peer_id = 1;
+  string peer_config = 2;
+}
+
+message GetMyWireguardPeerByInterfaceRequest {
+  string interface_id = 1;
+}
+
+message GetMyWireguardPeerByInterfaceResponse {
+  string peer_id = 1;
+  string peer_config = 2;
+}
+
+message PeerStatus {
+  string peer_id = 1;
+  string interface_id = 2;
+  string interface_name = 3;
+  uint64 rx_bytes = 4;
+  uint64 tx_bytes = 5;
+  int64 last_handshake_at = 6;
+}
+
+message ListPeerStatusesResponse {
+  repeated PeerStatus statuses = 1;
+}
+
+service WilliamService {
+  rpc ListWireguardInterfaces(google.protobuf.Empty) returns (ListWireguardInterfacesResponse);
+  rpc CreateWireguardPeer(CreateWireguardPeerRequest) returns (CreateWireguardPeerResponse);
+  rpc GetMyWireguardPeer(google.protobuf.Empty) returns (GetMyWireguardPeerResponse);
+  rpc GetMyWireguardPeerByInterface(GetMyWireguardPeerByInterfaceRequest) returns (GetMyWireguardPeerByInterfaceResponse);
+  rpc DeleteWireguardPeer(DeleteWireguardPeerRequest) returns (DeleteWireguardPeerResponse);
+  rpc ListPeerStatuses(google.protobuf.Empty) returns (ListPeerStatusesResponse);
+}

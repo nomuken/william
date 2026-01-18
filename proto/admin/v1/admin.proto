@@ -1,0 +1,230 @@
+syntax = "proto3";
+package william.admin.v1;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+message AdminWireguardInterface {
+  string id = 1;
+  string name = 2;
+  string address = 3;
+  uint32 listen_port = 4;
+  string public_key = 5;
+  uint32 mtu = 6;
+  string endpoint = 7;
+}
+
+message ListAdminInterfacesResponse {
+  repeated AdminWireguardInterface interfaces = 1;
+}
+
+message GetAdminInterfaceRequest {
+  string id = 1;
+}
+
+message GetAdminInterfaceResponse {
+  AdminWireguardInterface interface = 1;
+}
+
+message CreateAdminInterfaceRequest {
+  string name = 1;
+  string address = 2;
+  uint32 listen_port = 3;
+  uint32 mtu = 4;
+  string endpoint = 5;
+}
+
+message CreateAdminInterfaceResponse {
+  AdminWireguardInterface interface = 1;
+}
+
+message UpdateAdminInterfaceRequest {
+  string id = 1;
+  string address = 2;
+  uint32 listen_port = 3;
+  uint32 mtu = 4;
+  string endpoint = 5;
+  string name = 6;
+}
+
+message UpdateAdminInterfaceResponse {
+  AdminWireguardInterface interface = 1;
+}
+
+message DeleteAdminInterfaceRequest {
+  string id = 1;
+}
+
+message AllowedEmail {
+  string interface_id = 1;
+  string email = 2;
+  google.protobuf.Timestamp created_at = 3;
+}
+
+message ListAllowedEmailsRequest {
+  string interface_id = 1;
+}
+
+message ListAllowedEmailsResponse {
+  repeated AllowedEmail emails = 1;
+}
+
+message CreateAllowedEmailRequest {
+  string interface_id = 1;
+  string email = 2;
+}
+
+message DeleteAllowedEmailRequest {
+  string interface_id = 1;
+  string email = 2;
+}
+
+message AdminPeer {
+  string peer_id = 1;
+  string email = 2;
+  string interface_id = 3;
+  string allowed_ip = 4;
+  google.protobuf.Timestamp created_at = 5;
+}
+
+message ListAdminPeersRequest {
+  string interface_id = 1;
+}
+
+message ListAdminPeersResponse {
+  repeated AdminPeer peers = 1;
+}
+
+message DeleteAdminPeerRequest {
+  string peer_id = 1;
+}
+
+message CreateWireguardPeerRequest {
+  string interface_id = 1;
+  string endpoint = 2;
+  repeated string allowed_ips = 3;
+}
+
+message CreateWireguardPeerResponse {
+  string interface_id = 1;
+  string peer_id = 2;
+  string allowed_ip = 3;
+  string peer_config = 4;
+}
+
+message DeleteWireguardPeerRequest {
+  string peer_id = 1;
+}
+
+message UpdateWireguardPeerAllowedIPsRequest {
+  string interface_id = 1;
+  string peer_id = 2;
+  repeated string allowed_ips = 3;
+}
+
+message InterfaceRoute {
+  string interface_id = 1;
+  string cidr = 2;
+  google.protobuf.Timestamp created_at = 3;
+}
+
+message PeerRoute {
+  string peer_id = 1;
+  string cidr = 2;
+  google.protobuf.Timestamp created_at = 3;
+}
+
+message ListInterfaceRoutesRequest {
+  string interface_id = 1;
+}
+
+message ListInterfaceRoutesResponse {
+  repeated InterfaceRoute routes = 1;
+}
+
+message CreateInterfaceRouteRequest {
+  string interface_id = 1;
+  string cidr = 2;
+}
+
+message DeleteInterfaceRouteRequest {
+  string interface_id = 1;
+  string cidr = 2;
+}
+
+message ListPeerRoutesRequest {
+  string peer_id = 1;
+}
+
+message ListPeerRoutesResponse {
+  repeated PeerRoute routes = 1;
+}
+
+message CreatePeerRouteRequest {
+  string peer_id = 1;
+  string cidr = 2;
+}
+
+message DeletePeerRouteRequest {
+  string peer_id = 1;
+  string cidr = 2;
+}
+
+message PeerStat {
+  string peer_id = 1;
+  string interface_id = 2;
+  uint64 rx_bytes = 3;
+  uint64 tx_bytes = 4;
+  int64 last_handshake_at = 5;
+}
+
+message ListPeerStatsResponse {
+  repeated PeerStat stats = 1;
+}
+
+message GetFirewallRulesResponse {
+  string rules = 1;
+}
+
+message WireguardConfig {
+  string interface_id = 1;
+  string config = 2;
+}
+
+message ListWireguardConfigsRequest {
+  string interface_id = 1;
+}
+
+message ListWireguardConfigsResponse {
+  repeated WireguardConfig configs = 1;
+}
+
+service WilliamAdminService {
+  rpc ListInterfaces(google.protobuf.Empty) returns (ListAdminInterfacesResponse);
+  rpc GetInterface(GetAdminInterfaceRequest) returns (GetAdminInterfaceResponse);
+  rpc CreateInterface(CreateAdminInterfaceRequest) returns (CreateAdminInterfaceResponse);
+  rpc UpdateInterface(UpdateAdminInterfaceRequest) returns (UpdateAdminInterfaceResponse);
+  rpc DeleteInterface(DeleteAdminInterfaceRequest) returns (google.protobuf.Empty);
+
+  rpc ListAllowedEmails(ListAllowedEmailsRequest) returns (ListAllowedEmailsResponse);
+  rpc CreateAllowedEmail(CreateAllowedEmailRequest) returns (google.protobuf.Empty);
+  rpc DeleteAllowedEmail(DeleteAllowedEmailRequest) returns (google.protobuf.Empty);
+
+  rpc ListPeers(ListAdminPeersRequest) returns (ListAdminPeersResponse);
+  rpc DeletePeer(DeleteAdminPeerRequest) returns (google.protobuf.Empty);
+
+  rpc CreateWireguardPeer(CreateWireguardPeerRequest) returns (CreateWireguardPeerResponse);
+  rpc UpdateWireguardPeerAllowedIPs(UpdateWireguardPeerAllowedIPsRequest) returns (google.protobuf.Empty);
+  rpc DeleteWireguardPeer(DeleteWireguardPeerRequest) returns (google.protobuf.Empty);
+
+  rpc ListInterfaceRoutes(ListInterfaceRoutesRequest) returns (ListInterfaceRoutesResponse);
+  rpc CreateInterfaceRoute(CreateInterfaceRouteRequest) returns (google.protobuf.Empty);
+  rpc DeleteInterfaceRoute(DeleteInterfaceRouteRequest) returns (google.protobuf.Empty);
+  rpc ListPeerRoutes(ListPeerRoutesRequest) returns (ListPeerRoutesResponse);
+  rpc CreatePeerRoute(CreatePeerRouteRequest) returns (google.protobuf.Empty);
+  rpc DeletePeerRoute(DeletePeerRouteRequest) returns (google.protobuf.Empty);
+
+  rpc ListPeerStats(google.protobuf.Empty) returns (ListPeerStatsResponse);
+  rpc GetFirewallRules(google.protobuf.Empty) returns (GetFirewallRulesResponse);
+  rpc ListWireguardConfigs(ListWireguardConfigsRequest) returns (ListWireguardConfigsResponse);
+}

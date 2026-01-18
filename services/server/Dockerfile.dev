@@ -1,0 +1,17 @@
+FROM golang:1.24
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+    build-essential \
+    iproute2 \
+    kmod \
+    wireguard-tools \
+  && rm -rf /var/lib/apt/lists/*
+
+RUN /usr/local/go/bin/go install github.com/air-verse/air@v1.61.7
+
+WORKDIR /app/services/server
+
+EXPOSE 8080 8081
+
+CMD ["/go/bin/air", "-c", ".air.toml"]

@@ -1,0 +1,26 @@
+---
+william_frontend_install_dir: "/opt/william"
+william_frontend_compose_path: "/opt/william/compose.yaml"
+william_frontend_pomerium_dir: "/opt/william/pomerium"
+
+frontend_domain: "wireguard.ctf.seccon.jp"
+admin_domain: "wireguard-admin.ctf.seccon.jp"
+
+frontend_api_public_url: "https://wireguard.ctf.seccon.jp/api"
+admin_api_public_url: "https://wireguard-admin.ctf.seccon.jp/api"
+
+wireguard_api_base_url: "http://172.16.39.1:8080"
+wireguard_admin_api_base_url: "http://172.16.39.1:8081"
+
+frontend_image: "ghcr.io/nomuken/william/frontend:latest"
+admin_frontend_image: "ghcr.io/nomuken/william/admin-frontend:latest"
+
+pomerium_client_id: ""
+pomerium_client_secret: ""
+pomerium_cookie_secret: ""
+pomerium_shared_secret: ""
+pomerium_redirect_url: "https://wireguard.ctf.seccon.jp/.pomerium/callback"
+pomerium_cookie_domain: "ctf.seccon.jp"
+pomerium_autocert_email: ""
+pomerium_allowed_domains:
+  - "seccon.jp"

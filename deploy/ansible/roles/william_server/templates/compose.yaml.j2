@@ -1,0 +1,47 @@
+services:
+  server:
+    build:
+      context: {{ william_server_src_dir }}
+      dockerfile: Dockerfile
+    command: ["/app/william-server"]
+    environment:
+      WILLIAM_ADDR: "{{ william_addr }}"
+      WILLIAM_DB_DSN: "{{ william_db_dsn }}"
+      WILLIAM_MIGRATIONS: "{{ william_migrations_source }}"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  admin-server:
+    build:
+      context: {{ william_server_src_dir }}
+      dockerfile: Dockerfile
+    command: ["/app/admin-server"]
+    environment:
+      WILLIAM_ADMIN_ADDR: "{{ william_admin_addr }}"
+      WILLIAM_DB_DSN: "{{ william_db_dsn }}"
+      WILLIAM_MIGRATIONS: "{{ william_migrations_source }}"
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    privileged: true
+    volumes:
+      - "{{ william_wireguard_dir }}:/etc/wireguard"
+      - "/lib/modules:/lib/modules:ro"
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: "{{ postgres_db }}"
+      POSTGRES_USER: "{{ postgres_user }}"
+      POSTGRES_PASSWORD: "{{ postgres_password }}"
+    volumes:
+      - "{{ william_postgres_dir }}:/var/lib/postgresql/data"
+    restart: unless-stopped

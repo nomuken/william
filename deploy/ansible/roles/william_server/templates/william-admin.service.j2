@@ -1,0 +1,13 @@
+[Unit]
+Description=William Admin API Server
+After=network.target
+
+[Service]
+ExecStart={{ william_admin_bin_path }}
+WorkingDirectory={{ william_install_dir }}
+EnvironmentFile={{ william_admin_env_file }}
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

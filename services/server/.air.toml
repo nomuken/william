@@ -1,0 +1,12 @@
+root = "."
+
+tmp_dir = "tmp"
+
+[build]
+  cmd = "go build -o /tmp/william-server ./cmd/william-server"
+  bin = "/tmp/william-server"
+  include_ext = ["go"]
+  exclude_dir = ["tmp", "vendor", "gen", "node_modules"]
+
+[log]
+  time = true

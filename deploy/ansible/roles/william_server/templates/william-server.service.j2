@@ -1,0 +1,13 @@
+[Unit]
+Description=William Wireguard API Server
+After=network.target
+
+[Service]
+ExecStart={{ william_bin_path }}
+WorkingDirectory={{ william_install_dir }}
+EnvironmentFile={{ william_env_file }}
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,14 @@
+---
+- name: Deploy william server
+  hosts: wireguard_servers
+  become: true
+  roles:
+    - geerlingguy.docker
+    - william_server
+
+- name: Deploy william frontend stack
+  hosts: frontend_servers
+  become: true
+  roles:
+    - geerlingguy.docker
+    - william_frontend

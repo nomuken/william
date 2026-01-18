@@ -1,0 +1,14 @@
+---
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Restart william server
+  ansible.builtin.systemd:
+    name: "{{ william_service_name }}"
+    state: restarted
+
+- name: Restart william admin server
+  ansible.builtin.systemd:
+    name: "{{ william_admin_service_name }}"
+    state: restarted

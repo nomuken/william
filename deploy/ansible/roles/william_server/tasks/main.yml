@@ -1,0 +1,34 @@
+---
+- name: Ensure william server directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ william_install_dir }}"
+    - "{{ william_server_src_dir }}"
+    - "{{ william_wireguard_dir }}"
+    - "{{ william_postgres_dir }}"
+
+- name: Deploy server source tree
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../../services/server/"
+    dest: "{{ william_server_src_dir }}/"
+    mode: "0644"
+    directory_mode: "0755"
+
+- name: Deploy compose file
+  ansible.builtin.template:
+    src: compose.yaml.j2
+    dest: "{{ william_compose_path }}"
+    mode: "0644"
+
+- name: Build server images
+  ansible.builtin.command:
+    cmd: "docker compose -f {{ william_compose_path }} build"
+    chdir: "{{ william_install_dir }}"
+
+- name: Start server stack
+  ansible.builtin.command:
+    cmd: "docker compose -f {{ william_compose_path }} up -d"
+    chdir: "{{ william_install_dir }}"

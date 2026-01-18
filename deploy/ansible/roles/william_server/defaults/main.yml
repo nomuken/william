@@ -1,0 +1,15 @@
+---
+william_install_dir: "/opt/william"
+william_compose_path: "/opt/william/compose.yaml"
+william_server_src_dir: "/opt/william/server"
+william_wireguard_dir: "/opt/william/wireguard"
+william_postgres_dir: "/opt/william/postgres"
+
+william_addr: ":8080"
+william_admin_addr: ":8081"
+postgres_db: "william"
+postgres_user: "postgres"
+postgres_password: "postgres"
+
+william_db_dsn: "postgres://postgres:postgres@postgres:5432/william?sslmode=disable"
+william_migrations_source: "file:///app/db/migrations"

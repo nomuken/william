@@ -1,0 +1,25 @@
+services:
+  pomerium:
+    image: pomerium/pomerium:v0.27.0
+    command: ["--config=/etc/pomerium/config.yaml"]
+    volumes:
+      - "{{ william_frontend_pomerium_dir }}/config.yaml:/etc/pomerium/config.yaml:ro"
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - frontend
+      - admin-frontend
+    restart: unless-stopped
+
+  frontend:
+    image: "{{ frontend_image }}"
+    environment:
+      NEXT_PUBLIC_WILLIAM_API_BASE_URL: "{{ frontend_api_public_url }}"
+    restart: unless-stopped
+
+  admin-frontend:
+    image: "{{ admin_frontend_image }}"
+    environment:
+      NEXT_PUBLIC_WILLIAM_ADMIN_API_BASE_URL: "{{ admin_api_public_url }}"
+    restart: unless-stopped

@@ -1,0 +1,98 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: services/server/Dockerfile.dev
+    working_dir: /app/services/server
+    volumes:
+      - .:/app
+      - server-tmp:/app/services/server/tmp
+    environment:
+      WILLIAM_ADDR: ":8080"
+      WILLIAM_DB_DSN: "postgres://postgres:postgres@postgres:5432/william?sslmode=disable"
+      WILLIAM_MIGRATIONS: "file:///app/services/server/db/migrations"
+    depends_on:
+      - postgres
+
+  admin-server:
+    build:
+      context: .
+      dockerfile: services/server/Dockerfile.dev
+    working_dir: /app/services/server
+    command: ["/go/bin/air", "-c", ".air.admin.toml"]
+    volumes:
+      - .:/app
+      - admin-server-tmp:/app/services/server/tmp
+      - wireguard-config:/etc/wireguard
+      - /lib/modules:/lib/modules:ro
+    environment:
+      WILLIAM_ADMIN_ADDR: ":8081"
+      WILLIAM_DB_DSN: "postgres://postgres:postgres@postgres:5432/william?sslmode=disable"
+      WILLIAM_MIGRATIONS: "file:///app/services/server/db/migrations"
+      WILLIAM_DEV: "1"
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    privileged: true
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: william
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  nginx:
+    image: nginx:1.25-alpine
+    volumes:
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    depends_on:
+      - server
+      - frontend
+      - admin-server
+      - admin-frontend
+
+  frontend:
+    build:
+      context: .
+      dockerfile: services/frontend/Dockerfile.dev
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --hostname 0.0.0.0"
+    volumes:
+      - ./services/frontend:/app
+      - frontend-node-modules:/app/node_modules
+    environment:
+      NEXT_PUBLIC_WILLIAM_API_BASE_URL: "http://localhost:8080/api"
+    depends_on:
+      - server
+
+  admin-frontend:
+    build:
+      context: .
+      dockerfile: services/admin-frontend/Dockerfile.dev
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --hostname 0.0.0.0"
+    volumes:
+      - ./services/admin-frontend:/app
+      - admin-frontend-node-modules:/app/node_modules
+    environment:
+      NEXT_PUBLIC_WILLIAM_ADMIN_API_BASE_URL: "http://localhost:8081/api"
+    depends_on:
+      - admin-server
+
+volumes:
+  server-tmp:
+  admin-server-tmp:
+  frontend-node-modules:
+  admin-frontend-node-modules:
+  postgres-data:
+  wireguard-config:

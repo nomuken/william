@@ -1,0 +1,43 @@
+services: all
+address: ":443"
+insecure_server: true
+insecure_server_address: ":80"
+autocert: true
+autocert_email: "{{ pomerium_autocert_email }}"
+
+authenticate_service_url: "https://{{ frontend_domain }}"
+authorize_service_url: "https://{{ frontend_domain }}"
+redirect_url: "{{ pomerium_redirect_url }}"
+
+cookie_secret: "{{ pomerium_cookie_secret }}"
+shared_secret: "{{ pomerium_shared_secret }}"
+cookie_domain: "{{ pomerium_cookie_domain }}"
+
+idp_provider: "google"
+idp_client_id: "{{ pomerium_client_id }}"
+idp_client_secret: "{{ pomerium_client_secret }}"
+
+policy:
+  - from: "https://{{ frontend_domain }}"
+    to: "http://frontend:3000"
+    allowed_domains:
+{% for domain in pomerium_allowed_domains %}      - "{{ domain }}"
+{% endfor %}
+
+  - from: "https://{{ frontend_domain }}/api"
+    to: "{{ wireguard_api_base_url }}"
+    allowed_domains:
+{% for domain in pomerium_allowed_domains %}      - "{{ domain }}"
+{% endfor %}
+
+  - from: "https://{{ admin_domain }}"
+    to: "http://admin-frontend:3001"
+    allowed_domains:
+{% for domain in pomerium_allowed_domains %}      - "{{ domain }}"
+{% endfor %}
+
+  - from: "https://{{ admin_domain }}/api"
+    to: "{{ wireguard_admin_api_base_url }}"
+    allowed_domains:
+{% for domain in pomerium_allowed_domains %}      - "{{ domain }}"
+{% endfor %}
