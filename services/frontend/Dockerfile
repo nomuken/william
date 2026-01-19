@@ -13,6 +13,7 @@ COPY --from=deps /app/services/frontend/node_modules ./node_modules
 COPY services/frontend/. ./
 
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_DISABLE_TURBOPACK=1
 
 RUN npm run build
 
