@@ -9,6 +9,10 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+RUN apk add --no-cache curl
+RUN curl -sSL https://github.com/bufbuild/buf/releases/download/v1.63.0/buf-Linux-x86_64 -o /usr/local/bin/buf \
+  && chmod +x /usr/local/bin/buf
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY services/frontend ./services/frontend
 COPY buf.yaml buf.lock buf.gen.frontend.yaml ./
@@ -16,7 +20,7 @@ COPY proto ./proto
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN npx --yes buf generate --template buf.gen.frontend.yaml
+RUN buf generate --template buf.gen.frontend.yaml
 RUN npm --prefix services/frontend run build
 
 FROM node:20-alpine AS runner
