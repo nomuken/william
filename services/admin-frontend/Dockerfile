@@ -7,14 +7,23 @@ RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
 FROM node:20-alpine AS builder
 
-WORKDIR /app/services/admin-frontend
+WORKDIR /app
 
-COPY --from=deps /app/services/admin-frontend/node_modules ./node_modules
-COPY services/admin-frontend/. ./
+RUN apk add --no-cache curl
+RUN curl -sSL https://github.com/bufbuild/buf/releases/download/v1.63.0/buf-Linux-x86_64 -o /usr/local/bin/buf \
+  && chmod +x /usr/local/bin/buf
+
+COPY buf.yaml buf.lock buf.gen.admin-frontend.yaml ./
+COPY proto ./proto
+COPY services/admin-frontend ./services/admin-frontend
+COPY --from=deps /app/services/admin-frontend/node_modules ./services/admin-frontend/node_modules
 
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NEXT_DISABLE_TURBOPACK=1
 
+RUN buf generate --template buf.gen.admin-frontend.yaml
+
+WORKDIR /app/services/admin-frontend
 RUN npm run build
 
 FROM node:20-alpine AS runner

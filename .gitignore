@@ -1,5 +1,7 @@
 # Generated Go code
 /services/server/gen/
+/services/frontend/src/gen/
+/services/admin-frontend/src/gen/
 
 # Local database
 /services/server/data/william.db
