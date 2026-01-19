@@ -13,15 +13,19 @@ jobs:
       matrix:
         include:
           - name: server
-            context: services/server
+            context: .
             file: services/server/Dockerfile
             image: ghcr.io/${{ github.repository }}/server:latest
+          - name: admin-server
+            context: .
+            file: services/server/Dockerfile.admin
+            image: ghcr.io/${{ github.repository }}/admin-server:latest
           - name: frontend
-            context: services/frontend
+            context: .
             file: services/frontend/Dockerfile
             image: ghcr.io/${{ github.repository }}/frontend:latest
           - name: admin-frontend
-            context: services/admin-frontend
+            context: .
             file: services/admin-frontend/Dockerfile
             image: ghcr.io/${{ github.repository }}/admin-frontend:latest
     steps:

@@ -34,9 +34,8 @@ jobs:
       - name: Install Ansible
         run: python -m pip install ansible
 
-      - name: Install Ansible Galaxy roles
+      - name: Install Ansible Galaxy roles and collections
         run: ansible-galaxy install -r deploy/ansible/requirements.yml
-
       - name: Decrypt deploy SSH key
         env:
           DEPLOY_USER_PASSWORD: ${{ secrets.DEPLOY_USER_PASSWORD }}
@@ -50,4 +49,4 @@ jobs:
         run: |
           ansible-playbook -i deploy/ansible/inventory/production.ini deploy/ansible/site.yml \
             --private-key /tmp/id_rsa \
-            --extra-vars "frontend_image=${FRONTEND_IMAGE} admin_frontend_image=${ADMIN_FRONTEND_IMAGE} wireguard_api_base_url=${WIREGUARD_API_BASE_URL} wireguard_admin_api_base_url=${WIREGUARD_ADMIN_API_BASE_URL} pomerium_client_id=${POMERIUM_CLIENT_ID} pomerium_client_secret=${POMERIUM_CLIENT_SECRET} pomerium_cookie_secret=${POMERIUM_COOKIE_SECRET} pomerium_shared_secret=${POMERIUM_SHARED_SECRET} pomerium_autocert_email=${POMERIUM_AUTOCERT_EMAIL}"
+            --extra-vars "frontend_image=${FRONTEND_IMAGE} admin_frontend_image=${ADMIN_FRONTEND_IMAGE} wireguard_api_base_url=${WIREGUARD_API_BASE_URL} wireguard_admin_api_base_url=${WIREGUARD_ADMIN_API_BASE_URL} pomerium_client_id=${POMERIUM_CLIENT_ID} pomerium_client_secret=${POMERIUM_CLIENT_SECRET} pomerium_cookie_secret=${POMERIUM_COOKIE_SECRET} pomerium_shared_secret=${POMERIUM_SHARED_SECRET} pomerium_autocert_email=${POMERIUM_AUTOCERT_EMAIL} ghcr_username=${GITHUB_ACTOR} ghcr_token=${GITHUB_TOKEN}"

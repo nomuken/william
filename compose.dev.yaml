@@ -17,19 +17,16 @@ services:
   admin-server:
     build:
       context: .
-      dockerfile: services/server/Dockerfile.dev
-    working_dir: /app/services/server
-    command: ["/go/bin/air", "-c", ".air.admin.toml"]
+      dockerfile: services/server/Dockerfile.admin
+    working_dir: /app
+    command: ["/app/admin-server"]
     volumes:
-      - .:/app
-      - admin-server-tmp:/app/services/server/tmp
       - wireguard-config:/etc/wireguard
       - /lib/modules:/lib/modules:ro
     environment:
       WILLIAM_ADMIN_ADDR: ":8081"
       WILLIAM_DB_DSN: "postgres://postgres:postgres@postgres:5432/william?sslmode=disable"
-      WILLIAM_MIGRATIONS: "file:///app/services/server/db/migrations"
-      WILLIAM_DEV: "1"
+      WILLIAM_MIGRATIONS: "file:///app/db/migrations"
     cap_add:
       - NET_ADMIN
       - SYS_MODULE

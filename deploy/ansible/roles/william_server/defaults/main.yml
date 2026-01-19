@@ -1,9 +1,36 @@
 ---
 william_install_dir: "/opt/william"
 william_compose_path: "/opt/william/compose.yaml"
-william_server_src_dir: "/opt/william/server"
 william_wireguard_dir: "/opt/william/wireguard"
 william_postgres_dir: "/opt/william/postgres"
+william_pomerium_dir: "/opt/william/pomerium"
+
+william_server_image: "ghcr.io/nomuken/william/server:latest"
+william_admin_server_image: "ghcr.io/nomuken/william/admin-server:latest"
+frontend_image: "ghcr.io/nomuken/william/frontend:latest"
+admin_frontend_image: "ghcr.io/nomuken/william/admin-frontend:latest"
+
+frontend_domain: "wireguard.ctf.seccon.jp"
+admin_domain: "wireguard-admin.ctf.seccon.jp"
+
+frontend_api_public_url: "https://wireguard.ctf.seccon.jp/api"
+admin_api_public_url: "https://wireguard-admin.ctf.seccon.jp/api"
+
+wireguard_api_base_url: "http://172.16.39.1:8080"
+wireguard_admin_api_base_url: "http://172.16.39.1:8081"
+
+pomerium_client_id: ""
+pomerium_client_secret: ""
+pomerium_cookie_secret: ""
+pomerium_shared_secret: ""
+pomerium_redirect_url: "https://wireguard.ctf.seccon.jp/.pomerium/callback"
+pomerium_cookie_domain: "ctf.seccon.jp"
+pomerium_autocert_email: ""
+pomerium_allowed_domains:
+  - "seccon.jp"
+
+ghcr_username: ""
+ghcr_token: ""
 
 william_addr: ":8080"
 william_admin_addr: ":8081"

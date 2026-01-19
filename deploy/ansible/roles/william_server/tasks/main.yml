@@ -1,21 +1,20 @@
 ---
-- name: Ensure william server directories exist
+- name: Ensure william directories exist
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: "0755"
   loop:
     - "{{ william_install_dir }}"
-    - "{{ william_server_src_dir }}"
+    - "{{ william_pomerium_dir }}"
     - "{{ william_wireguard_dir }}"
     - "{{ william_postgres_dir }}"
 
-- name: Deploy server source tree
-  ansible.builtin.copy:
-    src: "{{ playbook_dir }}/../../services/server/"
-    dest: "{{ william_server_src_dir }}/"
+- name: Deploy Pomerium config
+  ansible.builtin.template:
+    src: pomerium.yaml.j2
+    dest: "{{ william_pomerium_dir }}/config.yaml"
     mode: "0644"
-    directory_mode: "0755"
 
 - name: Deploy compose file
   ansible.builtin.template:
@@ -23,12 +22,27 @@
     dest: "{{ william_compose_path }}"
     mode: "0644"
 
-- name: Build server images
-  ansible.builtin.command:
-    cmd: "docker compose -f {{ william_compose_path }} build"
-    chdir: "{{ william_install_dir }}"
+- name: Log in to GHCR
+  community.docker.docker_login:
+    registry_url: ghcr.io
+    username: "{{ ghcr_username }}"
+    password: "{{ ghcr_token }}"
 
-- name: Start server stack
-  ansible.builtin.command:
-    cmd: "docker compose -f {{ william_compose_path }} up -d"
-    chdir: "{{ william_install_dir }}"
+- name: Pull william images
+  community.docker.docker_compose_v2:
+    project_src: "{{ william_install_dir }}"
+    files:
+      - "{{ william_compose_path }}"
+    pull: always
+
+- name: Start william stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ william_install_dir }}"
+    files:
+      - "{{ william_compose_path }}"
+    state: present
+
+- name: Log out from GHCR
+  community.docker.docker_login:
+    registry_url: ghcr.io
+    state: absent
