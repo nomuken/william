@@ -20,12 +20,13 @@ function formatBytes(value: number) {
   return `${size.toFixed(1)} ${units[unitIndex]}`;
 }
 
-function formatHandshake(timestamp: number) {
-  if (!timestamp) {
+function formatHandshake(timestamp: number | bigint) {
+  const handshakeAt = Number(timestamp ?? 0);
+  if (!handshakeAt) {
     return { label: "never", className: "text-neutral-400" };
   }
   const now = Math.floor(Date.now() / 1000);
-  const diff = Math.max(0, now - timestamp);
+  const diff = Math.max(0, now - handshakeAt);
   if (diff < 60) {
     return { label: `${diff}s ago`, className: "text-emerald-300" };
   }
