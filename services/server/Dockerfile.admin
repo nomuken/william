@@ -29,6 +29,6 @@ RUN apk add --no-cache ca-certificates iproute2 wireguard-tools
 WORKDIR /app
 
 COPY --from=builder /out/admin-server /app/admin-server
-COPY --from=builder /app/db/migrations /app/db/migrations
+COPY --from=builder /app/services/server/db/migrations /app/db/migrations
 
 EXPOSE 8081

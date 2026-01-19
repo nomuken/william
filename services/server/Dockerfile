@@ -30,6 +30,6 @@ RUN apk add --no-cache ca-certificates
 WORKDIR /app
 
 COPY --from=builder /out/william-server /app/william-server
-COPY --from=builder /app/db/migrations /app/db/migrations
+COPY --from=builder /app/services/server/db/migrations /app/db/migrations
 
 EXPOSE 8080 8081
