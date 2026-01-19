@@ -1,27 +1,22 @@
 FROM golang:1.24-alpine AS builder
 
-WORKDIR /app/services/server
+WORKDIR /app
 
-COPY services/server/go.mod services/server/go.sum ./
+COPY go.mod go.sum ./
 RUN go mod download
 
 RUN go install github.com/bufbuild/buf/cmd/buf@v1.63.0
 RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.11
 RUN go install connectrpc.com/connect/cmd/protoc-gen-connect-go@v1.18.0
 
-WORKDIR /app
-
-COPY buf.yaml buf.lock buf.gen.yaml ./
-COPY proto ./proto
-COPY services/server ./services/server
+COPY . .
 
 ENV CGO_ENABLED=0
 
 RUN buf generate
 
-WORKDIR /app/services/server
-
 RUN go build -o /out/william-server ./cmd/william-server
+
 
 FROM alpine:3.20
 
