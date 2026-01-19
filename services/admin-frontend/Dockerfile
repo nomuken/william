@@ -20,6 +20,7 @@ COPY --from=deps /app/services/admin-frontend/node_modules ./services/admin-fron
 
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NEXT_DISABLE_TURBOPACK=1
+ENV TURBOPACK=0
 
 RUN buf generate --template buf.gen.admin-frontend.yaml
 
