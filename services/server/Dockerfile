@@ -5,9 +5,15 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 
+RUN go install github.com/bufbuild/buf/cmd/buf@v1.63.0
+RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.11
+RUN go install connectrpc.com/connect/cmd/protoc-gen-connect-go@v1.18.0
+
 COPY . .
 
 ENV CGO_ENABLED=0
+
+RUN buf generate
 
 RUN go build -o /out/william-server ./cmd/william-server
 RUN go build -o /out/admin-server ./cmd/admin-server
