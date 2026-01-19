@@ -36,7 +36,6 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 
 COPY --from=builder /app/services/frontend/package.json ./
-COPY --from=builder /app/services/frontend/public ./public
 COPY --from=builder /app/services/frontend/.next ./.next
 COPY --from=builder /app/services/frontend/node_modules ./node_modules
 
