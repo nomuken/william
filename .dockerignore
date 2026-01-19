@@ -1,0 +1,9 @@
+**/.git
+**/.gitignore
+**/.idea
+**/.next
+**/node_modules
+**/tmp
+**/dist
+**/coverage
+**/*.log

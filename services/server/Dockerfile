@@ -9,13 +9,15 @@ RUN go install github.com/bufbuild/buf/cmd/buf@v1.63.0
 RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.11
 RUN go install connectrpc.com/connect/cmd/protoc-gen-connect-go@v1.18.0
 
-COPY . .
+COPY buf.yaml buf.lock buf.gen.yaml ./
+COPY proto ./proto
+COPY services/server ./services/server
 
 ENV CGO_ENABLED=0
 
 RUN buf generate
 
-RUN go build -o /out/william-server ./cmd/william-server
+RUN go build -o /out/william-server ./services/server/cmd/william-server
 
 
 FROM alpine:3.20

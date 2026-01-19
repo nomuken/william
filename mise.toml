@@ -24,6 +24,16 @@ description = "Generate protobuf code for server"
 dir = "."
 run = "buf generate"
 
+[tasks.server-image-build]
+description = "Build william server image"
+dir = "."
+run = "docker build -f services/server/Dockerfile . -t william-server"
+
+[tasks.admin-server-image-build]
+description = "Build william admin server image"
+dir = "."
+run = "docker build -f services/server/Dockerfile.admin . -t william-admin-server"
+
 [tasks.server-seed]
 description = "Seed development data into Postgres"
 dir = "."
