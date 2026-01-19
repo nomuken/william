@@ -7,3 +7,10 @@
 **/dist
 **/coverage
 **/*.log
+!services/frontend/**
+!services/admin-frontend/**
+!services/server/**
+!proto/**
+!buf.yaml
+!buf.lock
+!buf.gen.yaml

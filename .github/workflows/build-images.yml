@@ -21,12 +21,12 @@ jobs:
             file: services/server/Dockerfile.admin
             image: ghcr.io/${{ github.repository }}/admin-server:latest
           - name: frontend
-            context: services/frontend
-            file: Dockerfile
+            context: .
+            file: services/frontend/Dockerfile
             image: ghcr.io/${{ github.repository }}/frontend:latest
           - name: admin-frontend
-            context: services/admin-frontend
-            file: Dockerfile
+            context: .
+            file: services/admin-frontend/Dockerfile
             image: ghcr.io/${{ github.repository }}/admin-frontend:latest
     steps:
       - name: Checkout
