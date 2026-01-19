@@ -20,7 +20,10 @@ COPY proto /app/proto
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
+WORKDIR /app
 RUN buf generate --template /app/buf.gen.admin-frontend.yaml
+
+WORKDIR /app/services/admin-frontend
 RUN npm run build
 
 FROM node:20-alpine AS runner
